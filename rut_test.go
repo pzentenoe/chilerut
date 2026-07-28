@@ -1,296 +1,90 @@
 package chilerut
 
-import (
-	"testing"
-)
+import "testing"
 
 func TestFormat(t *testing.T) {
-	type args struct {
-		rut string
-	}
-	tests := []struct {
-		name string
-		args args
-		want string
-	}{
-		{
-			"12.667.869-k",
-			args{
-				rut: "12.667.869.k",
-			},
-			"12667869-K",
-		},
-		{
-			"12-667-869-k",
-			args{
-				rut: "12-667-869-k",
-			},
-			"12667869-K",
-		},
-		{
-			"12*667*869*K",
-			args{
-				rut: "12*667*869*K",
-			},
-			"12667869-K",
-		},
-		{
-			"12 667 869 k",
-			args{
-				rut: "12 667 869 k",
-			},
-			"12667869-K",
-		},
-		{
-			"   000012667869k   ",
-			args{
-				rut: "   000012667869k   ",
-			},
-			"12667869-K",
-		},
-		{
-			"98685030",
-			args{
-				rut: "98685030",
-			},
-			"9868503-0",
-		},
-		{
-			"empty",
-			args{
-				rut: "",
-			},
-			"",
-		},
-		{
-			"only zeros",
-			args{
-				rut: "0000",
-			},
-			"",
-		},
-		{
-			"tabs and newlines",
-			args{
-				rut: "\t98685030\n",
-			},
-			"9868503-0",
-		},
+	tests := []struct{ name, in, want string }{
+		{"dotted lowercase k", "12.667.869.k", "12667869-K"},
+		{"dashed", "12-667-869-k", "12667869-K"},
+		{"asterisks", "12*667*869*K", "12667869-K"},
+		{"spaces", "12 667 869 k", "12667869-K"},
+		{"padded with zeros", "   000012667869k   ", "12667869-K"},
+		{"numeric check digit", "98685030", "9868503-0"},
+		{"tabs and newlines", "\t98685030\n", "9868503-0"},
+		{"empty", "", ""},
+		{"only zeros", "0000", ""},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := Format(tt.args.rut); got != tt.want {
-				t.Errorf("Format() = %v, want %v", got, tt.want)
+			if got := Format(tt.in); got != tt.want {
+				t.Errorf("Format(%q) = %q, want %q", tt.in, got, tt.want)
 			}
 		})
 	}
 }
 
 func TestVerificationDigit(t *testing.T) {
-	type args struct {
-		rut string
-	}
-	tests := []struct {
-		name   string
-		args   args
-		wantDv string
-	}{
-		{
-			"9868503(0)",
-			args{
-				rut: "9868503",
-			},
-			"0",
-		},
-		{
-			"12667869(K)",
-			args{
-				rut: "12667869",
-			},
-			"K",
-		},
-		{
-			"16.647.869(3)",
-			args{
-				rut: "16.647.869",
-			},
-			"3",
-		},
+	tests := []struct{ name, in, want string }{
+		{"dv zero", "9868503", "0"},
+		{"dv K", "12667869", "K"},
+		{"dv numeric", "16.647.869", "3"},
+		{"all ones", "11111111", "1"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if gotDv := VerificationDigit(tt.args.rut); gotDv != tt.wantDv {
-				t.Errorf("VerificationDigit() = %v, want %v", gotDv, tt.wantDv)
+			if got := VerificationDigit(tt.in); got != tt.want {
+				t.Errorf("VerificationDigit(%q) = %q, want %q", tt.in, got, tt.want)
 			}
 		})
 	}
 }
 
 func TestValid(t *testing.T) {
-	type args struct {
-		rut string
-	}
 	tests := []struct {
 		name string
-		args args
+		in   string
 		want bool
 	}{
-		{
-			"12345678-9",
-			args{
-				rut: "12345678-9",
-			},
-			false,
-		},
-		{
-			"6265837-1",
-			args{
-				rut: "6265837-1",
-			},
-			true,
-		},
-		{
-			"98685030",
-			args{
-				rut: "98685030",
-			},
-			true,
-		},
-		{
-			"9868503-0",
-			args{
-				rut: "9868503-0",
-			},
-			true,
-		},
-		{
-			"9.868.503-0",
-			args{
-				rut: "9.868.503-0",
-			},
-			true,
-		},
-		{
-			"12.667.869-K",
-			args{
-				rut: "12.667.869-K",
-			},
-			true,
-		},
-		{
-			"12.667.869-k",
-			args{
-				rut: "12.667.869-k",
-			},
-			true,
-		},
-		{
-			"11.111.111-1",
-			args{
-				rut: "11.111.111-1",
-			},
-			true,
-		},
-		{
-			"9999999-3",
-			args{
-				rut: "9999999-3",
-			},
-			true,
-		},
-		{
-			"wrong dv",
-			args{
-				rut: "12667869-0",
-			},
-			false,
-		},
-		{
-			"trailing garbage",
-			args{
-				rut: "123X",
-			},
-			false,
-		},
-		{
-			"empty",
-			args{
-				rut: "",
-			},
-			false,
-		},
-		{
-			"only dv",
-			args{
-				rut: "K",
-			},
-			false,
-		},
+		{"wrong check digit", "12345678-9", false},
+		{"plain", "6265837-1", true},
+		{"no separator", "98685030", true},
+		{"dash", "9868503-0", true},
+		{"dotted", "9.868.503-0", true},
+		{"uppercase K", "12.667.869-K", true},
+		{"lowercase k", "12.667.869-k", true},
+		{"all ones", "11.111.111-1", true},
+		{"all nines", "9999999-3", true},
+		{"valid body wrong dv", "12667869-0", false},
+		{"trailing garbage", "123X", false},
+		{"empty", "", false},
+		{"only check digit", "K", false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := Valid(tt.args.rut); got != tt.want {
-				t.Errorf("Valid() = %v, want %v", got, tt.want)
+			if got := Valid(tt.in); got != tt.want {
+				t.Errorf("Valid(%q) = %v, want %v", tt.in, got, tt.want)
 			}
 		})
 	}
 }
 
 func TestCompare(t *testing.T) {
-	type args struct {
-		rut1 string
-		rut2 string
-	}
 	tests := []struct {
-		name string
-		args args
-		want bool
+		name      string
+		rut1      string
+		rut2      string
+		wantEqual bool
 	}{
-		{
-			"12.667.869-K == 12.667.869-k",
-			args{
-				rut1: "12.667.869-K",
-				rut2: "12.667.869-k",
-			},
-			true,
-		},
-		{
-			"12.667.869-K != 12.667.861-K",
-			args{
-				rut1: "12.667.869-K",
-				rut2: "12.667.861-K",
-			},
-			false,
-		},
-		{
-			"12667869K == 12.667.869-k",
-			args{
-				rut1: "12667869K",
-				rut2: "12.667.869-k",
-			},
-			true,
-		},
-		{
-			"12.667.869-K == 12667869k",
-			args{
-				rut1: "12.667.869-K",
-				rut2: "12667869k",
-			},
-			true,
-		},
-		{
-			"98685030 == 9.868.503-0",
-			args{
-				rut1: "98685030",
-				rut2: "9.868.503-0",
-			},
-			true,
-		},
+		{"same dv different case", "12.667.869-K", "12.667.869-k", true},
+		{"different body", "12.667.869-K", "12.667.861-K", false},
+		{"plain vs dotted", "12667869K", "12.667.869-k", true},
+		{"dotted vs plain", "12.667.869-K", "12667869k", true},
+		{"no separator vs dotted", "98685030", "9.868.503-0", true},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := Compare(tt.args.rut1, tt.args.rut2); got != tt.want {
-				t.Errorf("Compare() = %v, want %v", got, tt.want)
+			if got := Compare(tt.rut1, tt.rut2); got != tt.wantEqual {
+				t.Errorf("Compare(%q, %q) = %v, want %v", tt.rut1, tt.rut2, got, tt.wantEqual)
 			}
 		})
 	}
@@ -312,10 +106,9 @@ func FuzzFormat(f *testing.F) {
 	f.Add("12.667.869-k")
 	f.Add("   000012667869k   ")
 	f.Fuzz(func(t *testing.T, rut string) {
-		out := Format(rut)
-		for i := 0; i < len(out); i++ {
-			if c := out[i]; !isNumeric(c) && c != '-' && c != 'K' {
-				t.Fatalf("Format(%q) contains %q", rut, c)
+		for _, c := range Format(rut) {
+			if c != '-' && c != 'K' && (c < '0' || c > '9') {
+				t.Fatalf("Format(%q) produced %q", rut, c)
 			}
 		}
 	})

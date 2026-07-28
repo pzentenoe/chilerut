@@ -1,3 +1,6 @@
+// Package chilerut validates, formats and compares Chilean RUT
+// (Rol Único Tributario) numbers using the standard módulo 11
+// check-digit algorithm.
 package chilerut
 
 import (
@@ -5,71 +8,76 @@ import (
 	"strings"
 )
 
-func isNumeric(s byte) bool {
-	return s >= '0' && s <= '9'
-}
-
-// Format returns the RUT as "body-dv" (e.g. "12667869-K"), stripping any
-// separators, leading zeros and lowercasing.
+// Format returns the canonical "body-dv" form of a RUT (e.g. "12667869-K"),
+// dropping any separators, leading zeros and lowercasing.
 func Format(rut string) string {
-	rut = strings.TrimSpace(rut)
-	rut = strings.TrimLeft(rut, "0")
-	rut = strings.ToUpper(rut)
-	rutFormated := ""
-	for i := 0; i < len(rut); i++ {
-		if i == len(rut)-1 {
-			if isNumeric(rut[i]) {
-				rutFormated += "-" + string(rut[i])
-			}
-			if rut[i] == 'K' {
-				rutFormated += "-K"
-			}
-		} else if isNumeric(rut[i]) {
-			rutFormated += string(rut[i])
-		}
+	body, dv := split(rut)
+	if dv == "" {
+		return ""
 	}
-	return rutFormated
+	return body + "-" + dv
 }
 
-// Valid reports whether rut is a valid Chilean RUT by checking its
-// verification digit. Any common separator format is accepted.
+// Valid reports whether rut is a valid RUT by recomputing its módulo 11
+// check digit. Any common separator format is accepted.
 func Valid(rut string) bool {
-	rut = Format(rut)
-	if len(rut) < 3 {
+	body, dv := split(rut)
+	if body == "" || dv == "" {
 		return false
 	}
-	t := strings.Split(rut, "-")
-	if len(t) != 2 {
-		return false
-	}
-	return VerificationDigit(t[0]) == t[1]
+	return VerificationDigit(body) == dv
 }
 
-// VerificationDigit returns the expected verification digit ("0"-"9" or "K")
-// for the given RUT body.
-func VerificationDigit(rut string) (dv string) {
-	rut = strings.TrimSpace(rut)
-	rut = strings.TrimLeft(rut, "0")
-	f := 0
-	sum := 0
+// VerificationDigit computes the expected módulo 11 check digit ("0"-"9"
+// or "K") for the given RUT body.
+func VerificationDigit(rut string) string {
+	sum, factor := 0, 2
 	for i := len(rut) - 1; i >= 0; i-- {
-		if isNumeric(rut[i]) {
-			sum += int(rut[i]-'0') * (f + 2)
-			f = (f + 1) % 6
+		c := rut[i]
+		if c < '0' || c > '9' {
+			continue
+		}
+		sum += int(c-'0') * factor
+		if factor == 7 {
+			factor = 2
+		} else {
+			factor++
 		}
 	}
-	num := 11 - (sum % 11)
-	if num < 10 {
-		dv = strconv.Itoa(num)
-	} else if num == 10 {
-		dv = "K"
-	} else {
-		dv = "0"
+	switch dv := 11 - sum%11; dv {
+	case 11:
+		return "0"
+	case 10:
+		return "K"
+	default:
+		return strconv.Itoa(dv)
 	}
-	return dv
 }
 
-// Compare reports whether two RUTs are equal, ignoring format differences.
+// Compare reports whether two RUTs are the same, ignoring format differences.
 func Compare(rut1, rut2 string) bool {
 	return Format(rut1) == Format(rut2)
+}
+
+// split normalizes a RUT into its numeric body and check digit.
+func split(rut string) (body, dv string) {
+	s := strings.TrimLeft(digits(rut), "0")
+	if s == "" {
+		return "", ""
+	}
+	return s[:len(s)-1], s[len(s)-1:]
+}
+
+// digits extracts the significant characters of a RUT: decimal digits and
+// an optional trailing 'K' check digit.
+func digits(rut string) string {
+	rut = strings.ToUpper(strings.TrimSpace(rut))
+	var b strings.Builder
+	b.Grow(len(rut))
+	for i := 0; i < len(rut); i++ {
+		if c := rut[i]; c >= '0' && c <= '9' || c == 'K' && i == len(rut)-1 {
+			b.WriteByte(c)
+		}
+	}
+	return b.String()
 }
