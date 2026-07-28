@@ -21,11 +21,13 @@ jobs:
       - run: go test -race -coverprofile=coverage.out -covermode=atomic ./...
       - run: go test -fuzz=FuzzValid -fuzztime=30s .
       - run: go test -fuzz=FuzzFormat -fuzztime=30s .
-      - uses: codecov/codecov-action@v5
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v5
         if: matrix.go == 'stable'
         with:
           files: coverage.out
           token: ${{ secrets.CODECOV_TOKEN }}
+          slug: pzentenoe/chilerut
 
   lint:
     runs-on: ubuntu-latest

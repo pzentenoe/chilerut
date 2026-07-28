@@ -2,7 +2,6 @@
 
 [![CI](https://github.com/pzentenoe/chilerut/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/pzentenoe/chilerut/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/pzentenoe/chilerut/graph/badge.svg?branch=main)](https://codecov.io/gh/pzentenoe/chilerut)
-[![Go Report Card](https://goreportcard.com/badge/github.com/pzentenoe/chilerut)](https://goreportcard.com/report/github.com/pzentenoe/chilerut)
 [![PkgGoDev](https://pkg.go.dev/badge/github.com/jonathanhecl/chilerut.svg)](https://pkg.go.dev/github.com/jonathanhecl/chilerut)
 [![Go 1.18+](https://img.shields.io/badge/go-%3E%3D1.18-blue)](go.mod)
 
