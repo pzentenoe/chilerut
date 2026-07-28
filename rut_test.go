@@ -21,13 +21,6 @@ func TestFormat(t *testing.T) {
 			"12667869-K",
 		},
 		{
-			"12.667.869-k",
-			args{
-				rut: "12.667.869.k",
-			},
-			"12667869-K",
-		},
-		{
 			"12-667-869-k",
 			args{
 				rut: "12-667-869-k",
@@ -54,6 +47,34 @@ func TestFormat(t *testing.T) {
 				rut: "   000012667869k   ",
 			},
 			"12667869-K",
+		},
+		{
+			"98685030",
+			args{
+				rut: "98685030",
+			},
+			"9868503-0",
+		},
+		{
+			"empty",
+			args{
+				rut: "",
+			},
+			"",
+		},
+		{
+			"only zeros",
+			args{
+				rut: "0000",
+			},
+			"",
+		},
+		{
+			"tabs and newlines",
+			args{
+				rut: "\t98685030\n",
+			},
+			"9868503-0",
 		},
 	}
 	for _, tt := range tests {
@@ -163,6 +184,48 @@ func TestValid(t *testing.T) {
 			},
 			true,
 		},
+		{
+			"11.111.111-1",
+			args{
+				rut: "11.111.111-1",
+			},
+			true,
+		},
+		{
+			"9999999-3",
+			args{
+				rut: "9999999-3",
+			},
+			true,
+		},
+		{
+			"wrong dv",
+			args{
+				rut: "12667869-0",
+			},
+			false,
+		},
+		{
+			"trailing garbage",
+			args{
+				rut: "123X",
+			},
+			false,
+		},
+		{
+			"empty",
+			args{
+				rut: "",
+			},
+			false,
+		},
+		{
+			"only dv",
+			args{
+				rut: "K",
+			},
+			false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -173,7 +236,7 @@ func TestValid(t *testing.T) {
 	}
 }
 
-func Test_Compare(t *testing.T) {
+func TestCompare(t *testing.T) {
 	type args struct {
 		rut1 string
 		rut2 string
@@ -215,6 +278,14 @@ func Test_Compare(t *testing.T) {
 			},
 			true,
 		},
+		{
+			"98685030 == 9.868.503-0",
+			args{
+				rut1: "98685030",
+				rut2: "9.868.503-0",
+			},
+			true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -223,4 +294,29 @@ func Test_Compare(t *testing.T) {
 			}
 		})
 	}
+}
+
+// Valid must never panic, regardless of input.
+func FuzzValid(f *testing.F) {
+	f.Add("12.667.869-K")
+	f.Add("98685030")
+	f.Add("123X")
+	f.Add("")
+	f.Fuzz(func(t *testing.T, rut string) {
+		Valid(rut)
+	})
+}
+
+// Format must only output digits, '-' and 'K'.
+func FuzzFormat(f *testing.F) {
+	f.Add("12.667.869-k")
+	f.Add("   000012667869k   ")
+	f.Fuzz(func(t *testing.T, rut string) {
+		out := Format(rut)
+		for i := 0; i < len(out); i++ {
+			if c := out[i]; !isNumeric(c) && c != '-' && c != 'K' {
+				t.Fatalf("Format(%q) contains %q", rut, c)
+			}
+		}
+	})
 }

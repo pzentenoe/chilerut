@@ -6,11 +6,13 @@ import (
 )
 
 func isNumeric(s byte) bool {
-	return (int(s) >= 48 && int(s) <= 57)
+	return s >= '0' && s <= '9'
 }
 
+// Format returns the RUT as "body-dv" (e.g. "12667869-K"), stripping any
+// separators, leading zeros and lowercasing.
 func Format(rut string) string {
-	rut = strings.Trim(rut, " ")
+	rut = strings.TrimSpace(rut)
 	rut = strings.TrimLeft(rut, "0")
 	rut = strings.ToUpper(rut)
 	rutFormated := ""
@@ -19,7 +21,7 @@ func Format(rut string) string {
 			if isNumeric(rut[i]) {
 				rutFormated += "-" + string(rut[i])
 			}
-			if int(rut[i]) == 75 || int(rut[i]) == 107 {
+			if rut[i] == 'K' {
 				rutFormated += "-K"
 			}
 		} else if isNumeric(rut[i]) {
@@ -29,33 +31,31 @@ func Format(rut string) string {
 	return rutFormated
 }
 
+// Valid reports whether rut is a valid Chilean RUT by checking its
+// verification digit. Any common separator format is accepted.
 func Valid(rut string) bool {
 	rut = Format(rut)
 	if len(rut) < 3 {
 		return false
 	}
 	t := strings.Split(rut, "-")
-	if VerificationDigit(t[0]) == t[1] {
-		return true
+	if len(t) != 2 {
+		return false
 	}
-	return false
+	return VerificationDigit(t[0]) == t[1]
 }
 
+// VerificationDigit returns the expected verification digit ("0"-"9" or "K")
+// for the given RUT body.
 func VerificationDigit(rut string) (dv string) {
-	rut = strings.Trim(rut, " ")
+	rut = strings.TrimSpace(rut)
 	rut = strings.TrimLeft(rut, "0")
-	factor := []int{2, 3, 4, 5, 6, 7}
 	f := 0
 	sum := 0
-	for i := len(rut) - 1; i > -1; i-- {
+	for i := len(rut) - 1; i >= 0; i-- {
 		if isNumeric(rut[i]) {
-			num, _ := strconv.ParseInt(string(rut[i]), 0, 64)
-			sum += int(num) * factor[f]
-			if f == len(factor)-1 {
-				f = 0
-			} else {
-				f++
-			}
+			sum += int(rut[i]-'0') * (f + 2)
+			f = (f + 1) % 6
 		}
 	}
 	num := 11 - (sum % 11)
@@ -69,11 +69,7 @@ func VerificationDigit(rut string) (dv string) {
 	return dv
 }
 
+// Compare reports whether two RUTs are equal, ignoring format differences.
 func Compare(rut1, rut2 string) bool {
-	rut1 = Format(rut1)
-	rut2 = Format(rut2)
-	if strings.EqualFold(rut1, rut2) {
-		return true
-	}
-	return false
+	return Format(rut1) == Format(rut2)
 }

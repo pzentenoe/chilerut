@@ -40,8 +40,8 @@ chilerut.VerificationDigit("9868503")
 # returns "0"
 chilerut.VerificationDigit("12667869")
 # returns "K"
-chilerut.VerificationDigit("12667869")
-# returns "K"
+chilerut.VerificationDigit("16647869")
+# returns "3"
 ```
 
 ## Format RUT
