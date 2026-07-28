@@ -1,0 +1,28 @@
+version: 2
+
+project_name: chilerut
+
+# chilerut is a library, so there are no binaries to build.
+builds:
+  - skip: true
+
+changelog:
+  use: git
+  sort: asc
+  groups:
+    - title: Features
+      regexp: '^.*?feat(\([[:word:]]+\))??!?:.+$'
+      order: 0
+    - title: Bug Fixes
+      regexp: '^.*?fix(\([[:word:]]+\))??!?:.+$'
+      order: 1
+    - title: Other Changes
+      order: 999
+  filters:
+    exclude:
+      - '^docs:'
+      - '^test:'
+      - '^chore:'
+      - '^ci:'
+      - '^refactor:'
+      - '^Merge '
