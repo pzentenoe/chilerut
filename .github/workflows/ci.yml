@@ -16,6 +16,7 @@ jobs:
       - uses: actions/setup-go@v5
         with:
           go-version: ${{ matrix.go }}
+          cache: false # zero dependencies, no go.sum to key on
       - run: go vet ./...
       - run: go test -race -coverprofile=coverage.out -covermode=atomic ./...
       - run: go test -fuzz=FuzzValid -fuzztime=30s .
@@ -33,6 +34,7 @@ jobs:
       - uses: actions/setup-go@v5
         with:
           go-version: stable
+          cache: false
       - uses: golangci/golangci-lint-action@v9
         with:
           version: latest
