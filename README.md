@@ -2,15 +2,16 @@
 
 [![CI](https://github.com/pzentenoe/chilerut/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/pzentenoe/chilerut/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/pzentenoe/chilerut/branch/main/graph/badge.svg)](https://codecov.io/gh/pzentenoe/chilerut)
-[![PkgGoDev](https://pkg.go.dev/badge/github.com/jonathanhecl/chilerut.svg)](https://pkg.go.dev/github.com/jonathanhecl/chilerut)
+[![PkgGoDev](https://pkg.go.dev/badge/github.com/pzentenoe/chilerut.svg)](https://pkg.go.dev/github.com/pzentenoe/chilerut)
 [![Go 1.18+](https://img.shields.io/badge/go-%3E%3D1.18-blue)](go.mod)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 Go package to validate, format and compare Chilean RUTs. Zero dependencies, 100% test coverage, fuzz-tested.
 
 ## Installation
 
 ```sh
-go get github.com/jonathanhecl/chilerut
+go get github.com/pzentenoe/chilerut
 ```
 
 Requires Go 1.18+.
@@ -18,7 +19,7 @@ Requires Go 1.18+.
 ## Usage
 
 ```go
-import "github.com/jonathanhecl/chilerut"
+import "github.com/pzentenoe/chilerut"
 ```
 
 ### Validate RUT

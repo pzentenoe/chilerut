@@ -1,3 +1,3 @@
-module github.com/jonathanhecl/chilerut
+module github.com/pzentenoe/chilerut
 
 go 1.18
