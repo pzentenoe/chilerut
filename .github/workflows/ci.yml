@@ -19,8 +19,9 @@ jobs:
           cache: false # zero dependencies, no go.sum to key on
       - run: go vet ./...
       - run: go test -race -coverprofile=coverage.out -covermode=atomic ./...
-      - run: go test -fuzz=FuzzValid -fuzztime=30s .
-      - run: go test -fuzz=FuzzFormat -fuzztime=30s .
+      - run: go test -fuzz='^FuzzValid$' -fuzztime=30s .
+      - run: go test -fuzz='^FuzzFormat$' -fuzztime=30s .
+      - run: go test -fuzz='^FuzzValidStrict$' -fuzztime=30s .
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5
         if: matrix.go == 'stable'
