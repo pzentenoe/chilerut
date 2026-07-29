@@ -2,11 +2,12 @@
 
 <a href="https://github.com/pzentenoe/chilerut/actions/workflows/ci.yml"><img src="https://github.com/pzentenoe/chilerut/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI" align="left"></a>
 <a href="https://codecov.io/gh/pzentenoe/chilerut"><img src="https://codecov.io/gh/pzentenoe/chilerut/branch/main/graph/badge.svg" alt="codecov" align="left"></a>
-<a href="https://app.fossa.com/projects/custom%2B60042%2Fgithub.com%2Fpzentenoe%2Fchilerut?ref=badge_shield&amp;issueType=license"><img src="https://app.fossa.com/api/projects/custom%2B60042%2Fgithub.com%2Fpzentenoe%2Fchilerut.svg?type=shield&amp;issueType=license" alt="FOSSA License" align="left"></a>
-<a href="https://app.fossa.com/projects/custom%2B60042%2Fgithub.com%2Fpzentenoe%2Fchilerut?ref=badge_shield&amp;issueType=security"><img src="https://app.fossa.com/api/projects/custom%2B60042%2Fgithub.com%2Fpzentenoe%2Fchilerut.svg?type=shield&amp;issueType=security&amp;v=2" alt="FOSSA Security" align="left"></a>
 <a href="https://pkg.go.dev/github.com/pzentenoe/chilerut"><img src="https://pkg.go.dev/badge/github.com/pzentenoe/chilerut.svg" alt="PkgGoDev" align="left"></a>
 <a href="go.mod"><img src="https://img.shields.io/badge/go-%3E%3D1.18-blue" alt="Go 1.18+" align="left"></a>
 <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT" align="left"></a>
+<br clear="all">
+<a href="https://app.fossa.com/projects/custom%2B60042%2Fgithub.com%2Fpzentenoe%2Fchilerut?ref=badge_shield&amp;issueType=license"><img src="https://app.fossa.com/api/projects/custom%2B60042%2Fgithub.com%2Fpzentenoe%2Fchilerut.svg?type=shield&amp;issueType=license" alt="FOSSA License" align="left"></a>
+<a href="https://app.fossa.com/projects/custom%2B60042%2Fgithub.com%2Fpzentenoe%2Fchilerut?ref=badge_shield&amp;issueType=security"><img src="https://app.fossa.com/api/projects/custom%2B60042%2Fgithub.com%2Fpzentenoe%2Fchilerut.svg?type=shield&amp;issueType=security&amp;v=2" alt="FOSSA Security" align="left"></a>
 <br clear="all">
 
 Go package to validate, format and compare Chilean RUTs. Zero dependencies, 100% test coverage, fuzz-tested.
