@@ -4,9 +4,12 @@
 package chilerut
 
 import (
+	"regexp"
 	"strconv"
 	"strings"
 )
+
+var strictRUT = regexp.MustCompile(`^(?:[0-9]+[0-9Kk]|[0-9]+-[0-9Kk]|[0-9]{1,3}(?:\.[0-9]{3})+-[0-9Kk])$`)
 
 // Format returns the canonical "body-dv" form of a RUT (e.g. "12667869-K"),
 // dropping any separators, leading zeros and lowercasing.
@@ -18,6 +21,23 @@ func Format(rut string) string {
 	return body + "-" + dv
 }
 
+// Compact returns a normalized RUT without separators, including its
+// verification digit (e.g. "12667869K").
+func Compact(rut string) string {
+	body, dv := split(rut)
+	return body + dv
+}
+
+// FormatWithDots returns the conventional Chilean display form of a RUT
+// (e.g. "12.667.869-K").
+func FormatWithDots(rut string) string {
+	body, dv := split(rut)
+	if dv == "" {
+		return ""
+	}
+	return withDots(body) + "-" + dv
+}
+
 // Valid reports whether rut is a valid RUT by recomputing its módulo 11
 // check digit. Any common separator format is accepted.
 func Valid(rut string) bool {
@@ -26,6 +46,17 @@ func Valid(rut string) bool {
 		return false
 	}
 	return VerificationDigit(body) == dv
+}
+
+// ValidStrict reports whether rut uses an accepted RUT syntax and has a valid
+// modulo 11 verification digit.
+func ValidStrict(rut string) bool {
+	rut = strings.TrimSpace(rut)
+	if !strictRUT.MatchString(rut) {
+		return false
+	}
+	body, dv := split(rut)
+	return body != "" && VerificationDigit(body) == dv
 }
 
 // VerificationDigit computes the expected módulo 11 check digit ("0"-"9"
@@ -66,6 +97,24 @@ func split(rut string) (body, dv string) {
 		return "", ""
 	}
 	return s[:len(s)-1], s[len(s)-1:]
+}
+
+func withDots(body string) string {
+	if len(body) <= 3 {
+		return body
+	}
+	first := len(body) % 3
+	if first == 0 {
+		first = 3
+	}
+	var b strings.Builder
+	b.Grow(len(body) + (len(body)-1)/3)
+	b.WriteString(body[:first])
+	for i := first; i < len(body); i += 3 {
+		b.WriteByte('.')
+		b.WriteString(body[i : i+3])
+	}
+	return b.String()
 }
 
 // digits extracts the significant characters of a RUT: decimal digits and

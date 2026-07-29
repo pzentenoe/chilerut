@@ -36,6 +36,15 @@ chilerut.Valid("12-667-869-K") // true
 chilerut.Valid("12*667*869-k") // true
 ```
 
+`Valid` is permissive and normalizes common separators. Use `ValidStrict` at
+API or form boundaries when arbitrary characters must be rejected:
+
+```go
+chilerut.ValidStrict("12.667.869-K") // true
+chilerut.ValidStrict("12667869K")     // true
+chilerut.ValidStrict("12*667*869*K")  // false
+```
+
 ### Get verification digit
 
 ```go
@@ -53,6 +62,13 @@ chilerut.Format("12*667*869*K")        // "12667869-K"
 chilerut.Format("12 667 869 k")        // "12667869-K"
 chilerut.Format("12667869k")           // "12667869-K"
 chilerut.Format("   000012667869k   ") // "12667869-K"
+```
+
+### Compact and display formats
+
+```go
+chilerut.Compact("12.667.869-k")      // "12667869K"
+chilerut.FormatWithDots("12667869K")  // "12.667.869-K"
 ```
 
 ### Compare RUT

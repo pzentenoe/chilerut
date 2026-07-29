@@ -1,6 +1,12 @@
 package chilerut
 
-import "testing"
+import (
+	"regexp"
+	"strings"
+	"testing"
+)
+
+var strictRUTSyntax = regexp.MustCompile(`^(?:[0-9]+[0-9Kk]|[0-9]+-[0-9Kk]|[0-9]{1,3}(?:\.[0-9]{3})+-[0-9Kk])$`)
 
 func TestFormat(t *testing.T) {
 	tests := []struct{ name, in, want string }{
@@ -18,6 +24,44 @@ func TestFormat(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := Format(tt.in); got != tt.want {
 				t.Errorf("Format(%q) = %q, want %q", tt.in, got, tt.want)
+			}
+		})
+	}
+}
+
+func TestCompact(t *testing.T) {
+	tests := []struct{ name, in, want string }{
+		{"dotted lowercase k", "12.667.869-k", "12667869K"},
+		{"already compact", "12667869K", "12667869K"},
+		{"permissive separator", "12*667*869*K", "12667869K"},
+		{"leading zeros", "000012667869K", "12667869K"},
+		{"lone check digit", "K", "K"},
+		{"lone check digit with separator", "-K", "K"},
+		{"only zeros", "0000", ""},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := Compact(tt.in); got != tt.want {
+				t.Errorf("Compact(%q) = %q, want %q", tt.in, got, tt.want)
+			}
+		})
+	}
+}
+
+func TestFormatWithDots(t *testing.T) {
+	tests := []struct{ name, in, want string }{
+		{"compact", "12667869K", "12.667.869-K"},
+		{"hyphenated", "12667869-K", "12.667.869-K"},
+		{"seven digit body", "98685030", "9.868.503-0"},
+		{"body grouped in threes", "1234567", "123.456-7"},
+		{"leading zeros", "000012667869K", "12.667.869-K"},
+		{"lone check digit", "K", "-K"},
+		{"only zeros", "0000", ""},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := FormatWithDots(tt.in); got != tt.want {
+				t.Errorf("FormatWithDots(%q) = %q, want %q", tt.in, got, tt.want)
 			}
 		})
 	}
@@ -68,6 +112,40 @@ func TestValid(t *testing.T) {
 	}
 }
 
+func TestValidStrict(t *testing.T) {
+	tests := []struct {
+		name string
+		in   string
+		want bool
+	}{
+		{"compact", "12667869K", true},
+		{"hyphenated", "12667869-K", true},
+		{"dotted", "12.667.869-K", true},
+		{"lowercase k", "12.667.869-k", true},
+		{"outer unicode whitespace", "\u00a0 12.667.869-k \u00a0", true},
+		{"leading zeros", "000001-9", true},
+		{"permissive separator", "12*667*869*K", false},
+		{"embedded spaces", "12 667 869-K", false},
+		{"misgrouped dots", "1.266.786.9-K", false},
+		{"dotted without hyphen", "12.667.869K", false},
+		{"double hyphen", "12.667.869--K", false},
+		{"trailing garbage", "123X", false},
+		{"lone check digit", "K", false},
+		{"lone check digit with separator", "-K", false},
+		{"empty", "", false},
+		{"all zeros", "0000", false},
+		{"all zero body", "000000-0", false},
+		{"wrong check digit", "12667869-0", false},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := ValidStrict(tt.in); got != tt.want {
+				t.Errorf("ValidStrict(%q) = %v, want %v", tt.in, got, tt.want)
+			}
+		})
+	}
+}
+
 func TestCompare(t *testing.T) {
 	tests := []struct {
 		name      string
@@ -112,4 +190,42 @@ func FuzzFormat(f *testing.F) {
 			}
 		}
 	})
+}
+
+func FuzzValidStrict(f *testing.F) {
+	f.Add("12667869K")
+	f.Add("12.667.869-k")
+	f.Add("12*667*869*K")
+	f.Add("000000-0")
+	f.Fuzz(func(t *testing.T, rut string) {
+		trimmed := strings.TrimSpace(rut)
+		want := false
+		if strictRUTSyntax.MatchString(trimmed) {
+			body, dv := strictParts(trimmed)
+			want = body != "" && strictVerificationDigit(body) == dv
+		}
+		if got := ValidStrict(rut); got != want {
+			t.Errorf("ValidStrict(%q) = %v, want %v", rut, got, want)
+		}
+	})
+}
+
+func strictParts(rut string) (body, dv string) {
+	rut = strings.NewReplacer(".", "", "-", "").Replace(strings.ToUpper(rut))
+	return strings.TrimLeft(rut[:len(rut)-1], "0"), rut[len(rut)-1:]
+}
+
+func strictVerificationDigit(body string) string {
+	total := 0
+	for offset := 0; offset < len(body); offset++ {
+		total += int(body[len(body)-1-offset]-'0') * (2 + offset%6)
+	}
+	switch digit := 11 - total%11; digit {
+	case 11:
+		return "0"
+	case 10:
+		return "K"
+	default:
+		return string(rune('0' + digit))
+	}
 }
