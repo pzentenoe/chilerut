@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-07-29
+
 ### Added
 
 - `Compact` for normalized RUTs without separators and with their verification digit.
@@ -30,4 +32,6 @@ First stable release as an independent Go module:
 
 - Prevented `Valid` from panicking on malformed input with trailing garbage.
 
+[Unreleased]: https://github.com/pzentenoe/chilerut/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/pzentenoe/chilerut/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/pzentenoe/chilerut/releases/tag/v1.0.0
