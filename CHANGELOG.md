@@ -15,6 +15,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `FormatWithDots` for conventional Chilean RUT display formatting.
 - `ValidStrict` for syntax-aware validation at API and form boundaries.
 
+### Fixed
+
+- Run each fuzz target independently in CI.
+
 ## [1.0.0] - 2026-07-28
 
 First stable release as an independent Go module:

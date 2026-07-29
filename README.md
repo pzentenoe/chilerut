@@ -45,6 +45,17 @@ chilerut.ValidStrict("12667869K")     // true
 chilerut.ValidStrict("12*667*869*K")  // false
 ```
 
+### Input rules
+
+- `Valid` is permissive: it normalizes common separators and ignores other
+  non-significant characters for compatibility.
+- `ValidStrict` accepts only compact (`12667869K`), hyphenated
+  (`12667869-K`), or conventionally dotted (`12.667.869-K`) input. It trims
+  outer whitespace, accepts lowercase `k`, and rejects malformed separators,
+  all-zero bodies, and lone verification digits.
+- `Format`, `Compact`, and `FormatWithDots` normalize input but do not verify
+  the verification digit. Use `Valid` or `ValidStrict` when validity matters.
+
 ### Get verification digit
 
 ```go
@@ -70,6 +81,9 @@ chilerut.Format("   000012667869k   ") // "12667869-K"
 chilerut.Compact("12.667.869-k")      // "12667869K"
 chilerut.FormatWithDots("12667869K")  // "12.667.869-K"
 ```
+
+`Compact` always includes the final significant character as the verification
+digit. All-zero input normalizes to an empty string.
 
 ### Compare RUT
 
