@@ -64,6 +64,14 @@ chilerut.VerificationDigit("12667869") // "K"
 chilerut.VerificationDigit("16647869") // "3"
 ```
 
+Pass the RUT body without its verification digit. To build a compact RUT with
+its digit:
+
+```go
+body := "12667869"
+rut := body + chilerut.VerificationDigit(body) // "12667869K"
+```
+
 ### Format RUT
 
 ```go
