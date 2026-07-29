@@ -1,12 +1,6 @@
 # chilerut
 
-[![CI](https://github.com/pzentenoe/chilerut/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/pzentenoe/chilerut/actions/workflows/ci.yml)
-[![codecov](https://codecov.io/gh/pzentenoe/chilerut/branch/main/graph/badge.svg)](https://codecov.io/gh/pzentenoe/chilerut)
-[![FOSSA License](https://app.fossa.com/api/projects/custom%2B60042%2Fgithub.com%2Fpzentenoe%2Fchilerut.svg?type=shield&issueType=license)](https://app.fossa.com/projects/custom%2B60042%2Fgithub.com%2Fpzentenoe%2Fchilerut?ref=badge_shield&issueType=license)
-[![FOSSA Security](https://app.fossa.com/api/projects/custom%2B60042%2Fgithub.com%2Fpzentenoe%2Fchilerut.svg?type=shield&issueType=security)](https://app.fossa.com/projects/custom%2B60042%2Fgithub.com%2Fpzentenoe%2Fchilerut?ref=badge_shield&issueType=security)
-[![PkgGoDev](https://pkg.go.dev/badge/github.com/pzentenoe/chilerut.svg)](https://pkg.go.dev/github.com/pzentenoe/chilerut)
-[![Go 1.18+](https://img.shields.io/badge/go-%3E%3D1.18-blue)](go.mod)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![CI](https://github.com/pzentenoe/chilerut/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/pzentenoe/chilerut/actions/workflows/ci.yml) [![codecov](https://codecov.io/gh/pzentenoe/chilerut/branch/main/graph/badge.svg)](https://codecov.io/gh/pzentenoe/chilerut) [![FOSSA License](https://app.fossa.com/api/projects/custom%2B60042%2Fgithub.com%2Fpzentenoe%2Fchilerut.svg?type=shield&issueType=license)](https://app.fossa.com/projects/custom%2B60042%2Fgithub.com%2Fpzentenoe%2Fchilerut?ref=badge_shield&issueType=license) [![FOSSA Security](https://app.fossa.com/api/projects/custom%2B60042%2Fgithub.com%2Fpzentenoe%2Fchilerut.svg?type=shield&issueType=security)](https://app.fossa.com/projects/custom%2B60042%2Fgithub.com%2Fpzentenoe%2Fchilerut?ref=badge_shield&issueType=security) [![PkgGoDev](https://pkg.go.dev/badge/github.com/pzentenoe/chilerut.svg)](https://pkg.go.dev/github.com/pzentenoe/chilerut) [![Go 1.18+](https://img.shields.io/badge/go-%3E%3D1.18-blue)](go.mod) [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 Go package to validate, format and compare Chilean RUTs. Zero dependencies, 100% test coverage, fuzz-tested.
 
