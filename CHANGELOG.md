@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Public API benchmarks with allocation reporting.
+- FOSSA dependency license and security scanning on pushes to `main`.
 
 ## [1.1.0] - 2026-07-29
 
