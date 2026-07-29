@@ -92,3 +92,34 @@ chilerut.Compare("12667869k", "12.667.869-K")    // true
 chilerut.Compare("12667869-k", "12.667.869-K")   // true
 chilerut.Compare("12.667.861-K", "12.667.869-K") // false
 ```
+
+## Development
+
+Run the test suite:
+
+```sh
+go test ./...
+```
+
+Measure public API performance and allocations:
+
+```sh
+go test -run='^$' -bench=. -benchmem -count=5 .
+```
+
+### Baseline
+
+Measured on an Apple M4 Pro with Go 1.26.5 on 2026-07-29. These numbers are
+reference measurements, not performance guarantees; compare changes on the
+same machine and Go version.
+
+| API | Time | Allocations |
+| --- | ---: | ---: |
+| `VerificationDigit` | ~4 ns/op | 0 |
+| `Valid` | ~35 ns/op | 1 |
+| `ValidStrict` (compact) | ~124 ns/op | 1 |
+| `ValidStrict` (dotted) | ~179 ns/op | 1 |
+| `Format` | ~48 ns/op | 2 |
+| `Compact` | ~46 ns/op | 2 |
+| `FormatWithDots` | ~61 ns/op | 3 |
+| `Compare` | ~83 ns/op | 2 |
